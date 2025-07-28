@@ -8,6 +8,7 @@ import TabNavigator from "./src/navigation/TabNavigator";
 import RecommendedPlaceScreen from "./src/screens/RecommendedPlaceScreen";
 import RecomendedPlaceScreen from "./src/screens/RecomendedPlaceScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
+import MapWithPlaceScreen from "./src/screens/MapWithPlaceScreen";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,8 @@ export default function App() {
                         <Stack.Screen name="MainTab" component={TabNavigator} options={{ headerShown: false }} />
                         <Stack.Screen name="RecommendedPlaceScreen" component={RecommendedPlaceScreen} options={{ headerShown: false }} />
                         <Stack.Screen name="RecomendedPlaceScreen" component={RecomendedPlaceScreen} options={{ headerShown: false }} />
+                        <Stack.Screen name="MapWithPlaceScreen" component={MapWithPlaceScreen} options={{ headerShown: false }} />
+
 
                     </Stack.Navigator>
                 </NavigationContainer>

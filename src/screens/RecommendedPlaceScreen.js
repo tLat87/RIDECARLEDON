@@ -1,18 +1,52 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // Для отступов на iOS
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Share from 'react-native-share';
+import { useDispatch, useSelector } from 'react-redux';
+import {addCard, removeCard} from "../redux/slices/cardsSlice";
 
-const RecommendedPlaceScreen = ({navigation}) => {
+const RecommendedPlaceScreen = ({ navigation, route }) => {
+    // Получаем данные о месте из route.params
+    const { place } = route.params;
+
+    const dispatch = useDispatch();
+    const isBookmarked = useSelector(state =>
+        state.cards.cards.some(card => card.id === place.id)
+    );
+
+    const toggleBookmark = () => {
+        if (isBookmarked) {
+            dispatch(removeCard(place.id));
+            Alert.alert('Removed', 'Place removed from bookmarks.');
+        } else {
+            dispatch(addCard(place));
+            Alert.alert('Saved', 'Place added to bookmarks!');
+        }
+    };
+
+    const onShare = async () => {
+        try {
+            const shareOptions = {
+                title: `Check out ${place.name}!`,
+                message: `I found a great place to visit: ${place.name}!\nCoordinates: ${place.coordinates}\n\nRead more about it here: ...`,
+                url: 'https://www.pc.gc.ca/en/pn-np/ab/banff', // Можно использовать динамический URL, если он есть в place
+            };
+            await Share.open(shareOptions);
+        } catch (error) {
+            console.error('Error sharing:', error);
+            Alert.alert('Sharing failed', 'Please try again later.');
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        {/* Иконка стрелки назад */}
                         <Image
-                            source={require('../assets/images/clarity_arrow-line.png')} // Замените на актуальный путь
-                            style={styles.sideIcon}
+                            source={require('../assets/images/clarity_arrow-line.png')}
+                            style={styles.headerIcon}
                         />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Recomended Place</Text>
@@ -21,56 +55,41 @@ const RecommendedPlaceScreen = ({navigation}) => {
                 {/* Main Content */}
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.card}>
-                        {/* Main Image */}
                         <Image
-                            source={require('../assets/images/RIDEwithCARLEDON/image8.png')} // Замените на актуальный путь к изображению
+                            source={place.image} // Используем изображение из переданных данных
                             style={styles.mainImage}
                         />
 
-                        {/* Side Icons */}
                         <View style={styles.sideIconsContainer}>
-                            <TouchableOpacity style={styles.sideIconButton}>
+                            <TouchableOpacity
+                                style={[styles.sideIconButton, isBookmarked ? styles.bookmarkedButton : null]}
+                                onPress={toggleBookmark}
+                            >
                                 <Image
-                                    source={require('../assets/images/iconoir_bookmark.png')} // Замените на актуальный путь
+                                    source={require('../assets/images/iconoir_bookmark.png')}
                                     style={styles.sideIcon}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.sideIconButton}>
+                            <TouchableOpacity style={styles.sideIconButton} onPress={onShare}>
                                 <Image
-                                    source={require('../assets/images/tabler_share-3.png')} // Замените на актуальный путь
+                                    source={require('../assets/images/tabler_share-3.png')}
                                     style={styles.sideIcon}
                                 />
                             </TouchableOpacity>
-
                         </View>
 
-                        {/* Place Name */}
-                        <Text style={styles.placeName}>Banff National Park</Text>
+                        <Text style={styles.placeName}>{place.name}</Text>
 
-                        {/* Coordinates Box */}
                         <View style={styles.coordinatesBox}>
                             <Image
-                                source={require('../assets/images/hugeicons_maps-location-02.png')} // Замените на актуальный путь к иконке
+                                source={require('../assets/images/hugeicons_maps-location-02.png')}
                                 style={styles.coordinatesIcon}
                             />
-                            <Text style={styles.coordinatesText}>Coordinates: 51.1784, -115.5708</Text>
+                            <Text style={styles.coordinatesText}>Coordinates: {place.coordinates}</Text>
                         </View>
 
-                        {/* Description */}
                         <Text style={styles.description}>
-                            <Text style={styles.boldText}>Banff National Park</Text>, founded in 1885, is the jewel
-                            of the Canadian Rockies, combining majestic peaks covered with ice caps and crystal-clear
-                            glacial lakes. Here you can build routes of varying difficulty: from short hiking trails along the shores
-                            of lakes to multi-day hikes through alpine passes.
-                        </Text>
-                        <Text style={styles.description}>
-                            In the summer, the park roars with waterfalls and
-                            is filled with a variety of flora and fauna, including
-                            moose, musk oxen and brown bears. In the winter,
-                            Banff turns into a real ski resort with world-class
-                            slopes and modern lifts. Must-see attractions are
-                            the Banff Upper Hot Springs, where you can relax
-                            after a long route, and the Sulphur Mountain
+                            <Text style={styles.boldText}>{place.name}</Text>, {place.description.split(',')[1]}
                         </Text>
                     </View>
                 </ScrollView>
@@ -82,7 +101,7 @@ const RecommendedPlaceScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#11100D', // Темно-серый фон
+        backgroundColor: '#11100D',
     },
     container: {
         flex: 1,
@@ -97,7 +116,7 @@ const styles = StyleSheet.create({
     headerIcon: {
         width: 24,
         height: 24,
-        tintColor: '#FFFFFF', // Белый цвет для иконки
+        tintColor: '#FFFFFF',
     },
     headerTitle: {
         color: '#FFFFFF',
@@ -106,13 +125,13 @@ const styles = StyleSheet.create({
         marginLeft: 15,
     },
     scrollViewContent: {
-        paddingBottom: 20, // Отступ снизу для скролла
+        paddingBottom: 20,
     },
     card: {
-        backgroundColor: '#202020', // Более светлый темно-серый фон для карточки
+        backgroundColor: '#202020',
         borderRadius: 15,
         padding: 15,
-        position: 'relative', // Для позиционирования боковых иконок
+        position: 'relative',
         marginBottom: 20,
     },
     mainImage: {
@@ -122,45 +141,28 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     sideIconsContainer: {
+        flexDirection: 'row',
         position: 'absolute',
-        top: 25, // Отступ сверху от карточки
-        right: 15, // Отступ справа от карточки
-        zIndex: 1, // Чтобы иконки были поверх изображения
+        top: 25,
+        right: 15,
+        zIndex: 1,
     },
     sideIconButton: {
-        backgroundColor: '#B18626', // Темно-серый фон для кнопок
+        backgroundColor: '#B18626',
         borderRadius: 10,
         padding: 8,
-        marginRight: 10,
+        marginLeft: 10,
         marginBottom: 10,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    bookmarkedButton: {
+        backgroundColor: '#D9B43B',
     },
     sideIcon: {
         width: 24,
         height: 24,
         tintColor: '#FFFFFF',
-    },
-    circularButton: {
-        backgroundColor: '#D9B43B', // Золотой фон
-        borderRadius: 50, // Круглая форма
-        width: 50,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row', // Для размещения иконки и буквы
-    },
-    sideIconGold: {
-        width: 24,
-        height: 24,
-        tintColor: '#000000', // Черный цвет для иконки на золотом фоне
-        position: 'absolute',
-    },
-    circularButtonText: {
-        color: '#000000', // Черный текст
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 10, // Отступ от иконки, если она будет
     },
     placeName: {
         color: '#FFFFFF',
@@ -171,12 +173,12 @@ const styles = StyleSheet.create({
     coordinatesBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#151515', // Фон для блока координат
+        backgroundColor: '#151515',
         borderRadius: 8,
         paddingVertical: 8,
         paddingHorizontal: 12,
         marginBottom: 15,
-        alignSelf: 'flex-start', // Чтобы блок не растягивался на всю ширину
+        alignSelf: 'flex-start',
     },
     coordinatesIcon: {
         width: 18,
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     description: {
-        color: '#D4D4D4', // Светло-серый текст
+        color: '#D4D4D4',
         fontSize: 15,
         lineHeight: 22,
         marginBottom: 10,

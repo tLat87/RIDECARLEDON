@@ -95,7 +95,7 @@ const placesData = [
         image: require('../assets/images/RIDEwithCARLEDON/image0.png'), // Placeholder image
     },
 ];
-
+//RecommendedPlaceScreen
 const RecomendedPlaceScreen = ({ navigation }) => {
     return (
         <ScrollView style={styles.container}>
@@ -114,26 +114,26 @@ const RecomendedPlaceScreen = ({ navigation }) => {
                         <Text style={styles.cardTitle}>{place.name}</Text>
                         <Text style={styles.cardDescription}>
                             {place.description.length > 150
-                                ? place.description.substring(0, 150) + '...' // Truncate description if too long
+                                ? place.description.substring(0, 150) + '...'
                                 : place.description}
                         </Text>
                     </View>
                     <View style={styles.cardButtons}>
-                        <TouchableOpacity style={styles.iconButton}>
-                            <Image
-                                source={require('../assets/images/iconoir_bookmark.png')}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.iconButton}>
-                            <Image
-                                source={require('../assets/images/tabler_share-3.png')}
-                            />
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity style={styles.iconButton}>*/}
+                        {/*    <Image*/}
+                        {/*        source={require('../assets/images/iconoir_bookmark.png')}*/}
+                        {/*    />*/}
+                        {/*</TouchableOpacity>*/}
+                        {/*<TouchableOpacity style={styles.iconButton}>*/}
+                        {/*    <Image*/}
+                        {/*        source={require('../assets/images/tabler_share-3.png')}*/}
+                        {/*    />*/}
+                        {/*</TouchableOpacity>*/}
                         <TouchableOpacity
                             style={styles.launchButton}
                             onPress={() => {
                                 // You might want to navigate to a detail screen for the specific place
-                                navigation.navigate("RecomendedPlaceScreen", { placeId: place.id });
+                                navigation.navigate("RecommendedPlaceScreen", { place: place });
                             }}
                         >
                             <Image
