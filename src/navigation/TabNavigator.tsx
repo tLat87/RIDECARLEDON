@@ -11,7 +11,6 @@ const Tab = createBottomTabNavigator();
 
 const CustomHeader = () => (
     <View style={styles.headerContainer}>
-        {/* Placeholder for your first header image */}
         <Image
             source={require('../assets/images/de6762d906015c05dae8600ed4aec6b1f6bd2317.png')} // Replace with your actual path
             style={{width:100,height:100}}

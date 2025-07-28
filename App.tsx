@@ -4,11 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {Provider} from "react-redux";
 import {PersistGate} from "redux-persist/integration/react";
 import {persistor, store} from "./src/redux/store";
-import TabNavigator from "./src/navigation/TabNavigator";
-import RecommendedPlaceScreen from "./src/screens/RecommendedPlaceScreen";
-import RecomendedPlaceScreen from "./src/screens/RecomendedPlaceScreen";
-import WelcomeScreen from "./src/screens/WelcomeScreen";
-import MapWithPlaceScreen from "./src/screens/MapWithPlaceScreen";
+import TabNavigator from "./src/navigation/TabNavigator.tsx";
+import RecommendedPlaceScreen from "./src/screens/RecommendedPlaceScreen.tsx";
+import RecomendedPlaceScreen from "./src/screens/RecomendedPlaceScreen.tsx";
+import WelcomeScreen from "./src/screens/WelcomeScreen.tsx";
+import MapWithPlaceScreen from "./src/screens/MapWithPlaceScreen.tsx";
 
 const Stack = createStackNavigator();
 

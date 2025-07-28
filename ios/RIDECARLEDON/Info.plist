@@ -49,5 +49,26 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app uses your location to show your position on the map and suggest nearby places.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Location access is used to enhance map features even when the app is in the background.</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>This app needs access to your camera to allow you to share photos or scan QR codes.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to let you share images or save shared content.</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app may use your microphone for voice-related features or audio notes (if applicable).</string>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
 </dict>
 </plist>
