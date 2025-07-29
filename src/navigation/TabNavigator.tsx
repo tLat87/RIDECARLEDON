@@ -1,16 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import MainScreen from "../screens/MainScreen";
 import RecomendedPlaceScreen from "../screens/RecomendedPlaceScreen";
 import MapScreen from "../screens/MapScreen";
 import SavedPlacesScreen from "../screens/SavedPlacesScreen";
+import RouteDiaryScreen from "../screens/RouteDiaryScreen";
+import {useNavigation} from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
-const CustomHeader = () => (
-    <View style={styles.headerContainer}>
+const CustomHeader = () => {
+    const navigation = useNavigation();
+    return (   <TouchableOpacity style={styles.headerContainer} onPress={()=>{navigation.navigate('MainScreenqw')}}>
         <Image
             source={require('../assets/images/de6762d906015c05dae8600ed4aec6b1f6bd2317.png')} // Replace with your actual path
             style={{width:100,height:100}}
@@ -20,8 +23,9 @@ const CustomHeader = () => (
             source={require('../assets/images/73c76d4e26c00093205f81b6b6a12408f01cf8ac.png')} // Replace with your actual path
             style={styles.guitarIcon}
         />
-    </View>
-);
+    </TouchableOpacity>)
+}
+
 
 const TabNavigator = () => {
     return (
@@ -54,9 +58,10 @@ const TabNavigator = () => {
                     ),
                 }}
             />
+
             <Tab.Screen
                 name="MainScreen"
-                component={MainScreen}
+                component={RouteDiaryScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.tabIconContainer}>
@@ -69,6 +74,21 @@ const TabNavigator = () => {
                     ),
                 }}
             />
+            {/*<Tab.Screen*/}
+            {/*    name="MainScreen"*/}
+            {/*    component={MainScreen}*/}
+            {/*    options={{*/}
+            {/*        tabBarIcon: ({ focused }) => (*/}
+            {/*            <View style={styles.tabIconContainer}>*/}
+            {/*                <Image*/}
+            {/*                    source={require('../assets/images/proicons_info.png')}*/}
+            {/*                    style={[styles.tabIcon, { tintColor: focused ? '#FFFFFF' : '#888888' }]}*/}
+            {/*                />*/}
+            {/*                {focused && <View style={styles.activeDot} />}*/}
+            {/*            </View>*/}
+            {/*        ),*/}
+            {/*    }}*/}
+            {/*/>*/}
 
             <Tab.Screen
                 name="MapScreen"
