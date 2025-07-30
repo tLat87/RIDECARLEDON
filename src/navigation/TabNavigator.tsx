@@ -8,6 +8,7 @@ import MapScreen from "../screens/MapScreen";
 import SavedPlacesScreen from "../screens/SavedPlacesScreen";
 import RouteDiaryScreen from "../screens/RouteDiaryScreen";
 import {useNavigation} from "@react-navigation/native";
+import TravelQuestionnaireScreen from "../screens/TravelQuestionnaireScreen.tsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -108,7 +109,7 @@ const TabNavigator = () => {
 
             <Tab.Screen
                 name="SavedPlacesScreen"
-                component={SavedPlacesScreen}
+                component={TravelQuestionnaireScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.tabIconContainer}>

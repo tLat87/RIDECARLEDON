@@ -10,33 +10,33 @@ const Maps_APIKEY = 'AIzaSyAcpy1ylznYCgPuR1fK9paRojMi2fu3qKo';
 
 const MapWithPlaceScreen = ({ route }) => {
     const navigation = useNavigation();
-    const mapRef = useRef(null); // Для управления картой
+    const mapRef = useRef(null); // For controlling the map
 
-    // Параметры из навигации (если приходят)
+    // Parameters from navigation (if any)
     const { latitude, longitude, placeName } = route.params || {};
 
-    // Состояния для создания маршрута
-    const [origin, setOrigin] = useState(null); // Точка А
-    const [destination, setDestination] = useState(null); // Точка Б
-    const [routeCoords, setRouteCoords] = useState([]); // Координаты маршрута для Polyline
-    const [routeDistance, setRouteDistance] = useState(null); // Длина маршрута
-    const [routeDuration, setRouteDuration] = useState(null); // Время в пути
-    const [routeNameInput, setRouteNameInput] = useState(''); // Ввод названия маршрута
-    const [routePhotoUrlInput, setRoutePhotoUrlInput] = useState(''); // Ввод URL фото
+    // States for building the route
+    const [origin, setOrigin] = useState(null); // Point A
+    const [destination, setDestination] = useState(null); // Point B
+    const [routeCoords, setRouteCoords] = useState([]); // Route coordinates for Polyline
+    const [routeDistance, setRouteDistance] = useState(null); // Route length
+    const [routeDuration, setRouteDuration] = useState(null); // Travel time
+    const [routeNameInput, setRouteNameInput] = useState(''); // Route name input
+    const [routePhotoUrlInput, setRoutePhotoUrlInput] = useState(''); // Photo URL input
 
-    // Состояние для хранения сохраненных маршрутов
+    // State for saved routes
     const [savedRoutes, setSavedRoutes] = useState([]);
 
-    // Загрузка сохраненных маршрутов при загрузке компонента
+    // Load saved routes on component mount
     useEffect(() => {
         loadRoutes();
-        // Если пришли параметры места, устанавливаем его как destination по умолчанию
+        // If place coordinates are provided, set it as the default destination
         if (latitude && longitude) {
             setDestination({ latitude, longitude });
         }
     }, []);
 
-    // Функция для загрузки маршрутов из AsyncStorage
+    // Load routes from AsyncStorage
     const loadRoutes = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem('@custom_routes');
@@ -44,24 +44,24 @@ const MapWithPlaceScreen = ({ route }) => {
                 setSavedRoutes(JSON.parse(jsonValue));
             }
         } catch (e) {
-            console.error('Ошибка при загрузке маршрутов:', e);
-            Alert.alert('Ошибка', 'Не удалось загрузить сохраненные маршруты.');
+            console.error('Error loading routes:', e);
+            Alert.alert('Error', 'Failed to load saved routes.');
         }
     };
 
-    // Функция для сохранения текущего маршрута
+    // Save the current route
     const saveCurrentRoute = async () => {
         if (!origin || !destination || routeCoords.length === 0) {
-            Alert.alert('Ошибка', 'Сначала выберите начальную и конечную точки и постройте маршрут.');
+            Alert.alert('Error', 'Please select origin and destination points and build a route first.');
             return;
         }
         if (!routeNameInput.trim()) {
-            Alert.alert('Ошибка', 'Пожалуйста, введите название для маршрута.');
+            Alert.alert('Error', 'Please enter a name for the route.');
             return;
         }
 
         const newRoute = {
-            id: Date.now().toString(), // Уникальный ID
+            id: Date.now().toString(), // Unique ID
             name: routeNameInput.trim(),
             origin: origin,
             destination: destination,
@@ -76,16 +76,15 @@ const MapWithPlaceScreen = ({ route }) => {
         try {
             await AsyncStorage.setItem('@custom_routes', JSON.stringify(updatedRoutes));
             setSavedRoutes(updatedRoutes);
-            Alert.alert('Успех', `Маршрут "${routeNameInput.trim()}" сохранен!`);
-            // Очищаем поля после сохранения
-            resetRouteCreation();
+            Alert.alert('Success', `Route "${routeNameInput.trim()}" saved!`);
+            resetRouteCreation(); // Clear fields after saving
         } catch (e) {
-            console.error('Ошибка при сохранении маршрута:', e);
-            Alert.alert('Ошибка', 'Не удалось сохранить маршрут.');
+            console.error('Error saving route:', e);
+            Alert.alert('Error', 'Failed to save the route.');
         }
     };
 
-    // Функция для загрузки и отображения сохраненного маршрута
+    // Load and display a saved route
     const loadAndDisplayRoute = (routeToLoad) => {
         setOrigin(routeToLoad.origin);
         setDestination(routeToLoad.destination);
@@ -95,38 +94,38 @@ const MapWithPlaceScreen = ({ route }) => {
         setRouteNameInput(routeToLoad.name);
         setRoutePhotoUrlInput(routeToLoad.photoUrl);
 
-        // Центрируем карту на маршруте
+        // Center the map on the route
         if (mapRef.current && routeToLoad.coords.length > 0) {
             mapRef.current.fitToCoordinates(routeToLoad.coords, {
                 edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
                 animated: true,
             });
         }
-        Alert.alert('Маршрут загружен', `Отображается маршрут "${routeToLoad.name}".`);
+        Alert.alert('Route Loaded', `Displaying route "${routeToLoad.name}".`);
     };
 
-    // Функция для удаления маршрута
+    // Delete a route
     const deleteRoute = async (idToDelete) => {
         Alert.alert(
-            'Удалить маршрут',
-            'Вы уверены, что хотите удалить этот маршрут?',
+            'Delete Route',
+            'Are you sure you want to delete this route?',
             [
-                { text: 'Отмена', style: 'cancel' },
+                { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'Удалить',
+                    text: 'Delete',
                     onPress: async () => {
                         const updatedRoutes = savedRoutes.filter(route => route.id !== idToDelete);
                         try {
                             await AsyncStorage.setItem('@custom_routes', JSON.stringify(updatedRoutes));
                             setSavedRoutes(updatedRoutes);
-                            Alert.alert('Успех', 'Маршрут удален.');
-                            // Если удаленный маршрут был текущим, очищаем его
-                            if (origin && origin.id === idToDelete) { // Простое сравнение, может быть улучшено
+                            Alert.alert('Success', 'Route deleted.');
+                            // If deleted route was current, reset
+                            if (origin && origin.id === idToDelete) {
                                 resetRouteCreation();
                             }
                         } catch (e) {
-                            console.error('Ошибка при удалении маршрута:', e);
-                            Alert.alert('Ошибка', 'Не удалось удалить маршрут.');
+                            console.error('Error deleting route:', e);
+                            Alert.alert('Error', 'Failed to delete the route.');
                         }
                     },
                 },
@@ -134,7 +133,7 @@ const MapWithPlaceScreen = ({ route }) => {
         );
     };
 
-    // Функция для сброса состояния создания маршрута
+    // Reset route creation state
     const resetRouteCreation = () => {
         setOrigin(null);
         setDestination(null);
@@ -143,20 +142,20 @@ const MapWithPlaceScreen = ({ route }) => {
         setRouteDuration(null);
         setRouteNameInput('');
         setRoutePhotoUrlInput('');
-        Alert.alert('Начать новый маршрут', 'Выберите Точку А на карте.');
+        Alert.alert('Start New Route', 'Select Point A on the map.');
     };
 
-    // Обработчик тапа по карте для установки точек
+    // Handle map press to set points
     const handleMapPress = (event) => {
         const { latitude, longitude } = event.nativeEvent.coordinate;
         if (!origin) {
             setOrigin({ latitude, longitude });
-            Alert.alert('Точка А установлена', 'Теперь выберите Точку Б на карте.');
+            Alert.alert('Point A Set', 'Now select Point B on the map.');
         } else if (!destination) {
             setDestination({ latitude, longitude });
-            Alert.alert('Точка Б установлена', 'Маршрут будет построен.');
+            Alert.alert('Point B Set', 'The route will be generated.');
         } else {
-            Alert.alert('Точки уже установлены', 'Нажмите "Создать новый маршрут" для сброса.');
+            Alert.alert('Points Already Set', 'Tap "Create New Route" to reset.');
         }
     };
 
@@ -166,7 +165,7 @@ const MapWithPlaceScreen = ({ route }) => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Text style={styles.backButtonText}>←</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Создать маршрут</Text>
+                <Text style={styles.headerTitle}>Create Route</Text>
             </View>
 
             <MapView
@@ -175,40 +174,37 @@ const MapWithPlaceScreen = ({ route }) => {
                 initialRegion={
                     (latitude && longitude) ?
                         { latitude, longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } :
-                        { latitude: 51.7592, longitude: 19.4560, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } // Пример: Лодзь, Польша
+                        { latitude: 51.7592, longitude: 19.4560, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } // Example: Lodz, Poland
                 }
                 customMapStyle={mapStyle}
-                onPress={handleMapPress} // Обработчик тапов по карте
+                onPress={handleMapPress}
             >
                 {origin && (
-                    <Marker coordinate={origin} title="Точка А" pinColor="blue" />
+                    <Marker coordinate={origin} title="Point A" pinColor="blue" />
                 )}
                 {destination && (
-                    <Marker coordinate={destination} title="Точка Б" pinColor="red" />
+                    <Marker coordinate={destination} title="Point B" pinColor="red" />
                 )}
 
-                {/* Отображение маршрута */}
                 {routeCoords.length > 0 && (
                     <Polyline
                         coordinates={routeCoords}
                         strokeWidth={4}
-                        strokeColor="#d9b43b" // Цвет линии маршрута
+                        strokeColor="#d9b43b"
                     />
                 )}
 
-                {/* MapViewDirections для получения координат маршрута */}
                 {origin && destination && Maps_APIKEY !== 'YOUR_Maps_API_KEY' && (
                     <MapViewDirections
                         origin={origin}
                         destination={destination}
                         apikey={Maps_APIKEY}
-                        strokeWidth={0} // Не рисуем линию, так как используем Polyline выше
+                        strokeWidth={0}
                         onReady={result => {
                             setRouteCoords(result.coordinates);
-                            setRouteDistance(result.distance); // Длина в км
-                            setRouteDuration(result.duration); // Время в минутах
-                            console.log(`Длина маршрута: ${result.distance} км, Время: ${result.duration} мин`);
-                            // Центрируем карту на построенном маршруте
+                            setRouteDistance(result.distance);
+                            setRouteDuration(result.duration);
+                            console.log(`Route Distance: ${result.distance} km, Duration: ${result.duration} min`);
                             if (mapRef.current) {
                                 mapRef.current.fitToCoordinates(result.coordinates, {
                                     edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
@@ -217,9 +213,9 @@ const MapWithPlaceScreen = ({ route }) => {
                             }
                         }}
                         onError={(errorMessage) => {
-                            console.error('Ошибка при получении маршрута:', errorMessage);
-                            Alert.alert('Ошибка', `Не удалось построить маршрут. Проверьте API ключ и доступность сервиса. ${errorMessage}`);
-                            setRouteCoords([]); // Очищаем координаты при ошибке
+                            console.error('Error fetching directions:', errorMessage);
+                            Alert.alert('Error', `Could not build route. Check your API key and service availability. ${errorMessage}`);
+                            setRouteCoords([]);
                             setRouteDistance(null);
                             setRouteDuration(null);
                         }}
@@ -228,60 +224,59 @@ const MapWithPlaceScreen = ({ route }) => {
             </MapView>
 
             <ScrollView style={styles.placeCard}>
-                <Text style={styles.cardTitle}>Создание и управление маршрутами</Text>
+                <Text style={styles.cardTitle}>Create and Manage Routes</Text>
 
-                {/* Кнопка "Создать новый маршрут" */}
                 <TouchableOpacity
-                    style={[styles.launchButton, { backgroundColor: '#5cb85c', marginBottom: 15 }]} // Зеленая кнопка
+                    style={[styles.launchButton, { backgroundColor: '#5cb85c', marginBottom: 15 }]}
                     onPress={resetRouteCreation}
                 >
-                    <Text style={styles.launchButtonText}>Создать новый маршрут</Text>
+                    <Text style={styles.launchButtonText}>Create New Route</Text>
                 </TouchableOpacity>
 
                 {origin && destination && (
                     <View>
                         <Text style={styles.infoText}>
-                            **Точка А:** {origin.latitude.toFixed(4)}, {origin.longitude.toFixed(4)}
+                            **Point A:** {origin.latitude.toFixed(4)}, {origin.longitude.toFixed(4)}
                         </Text>
                         <Text style={styles.infoText}>
-                            **Точка Б:** {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
+                            **Point B:** {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
                         </Text>
                     </View>
                 )}
 
                 {routeDistance !== null && (
                     <Text style={styles.distanceText}>
-                        **Длина маршрута:** {routeDistance.toFixed(2)} км
+                        **Distance:** {routeDistance.toFixed(2)} km
                     </Text>
                 )}
                 {routeDuration !== null && (
                     <Text style={styles.distanceText}>
-                        **Время в пути:** {Math.round(routeDuration)} мин
+                        **Duration:** {Math.round(routeDuration)} min
                     </Text>
                 )}
 
                 <TextInput
                     style={styles.input}
-                    placeholder="Название маршрута"
+                    placeholder="Route Name"
                     placeholderTextColor="#999"
                     value={routeNameInput}
                     onChangeText={setRouteNameInput}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="URL фото (необязательно)"
+                    placeholder="Photo URL (optional)"
                     placeholderTextColor="#999"
                     value={routePhotoUrlInput}
                     onChangeText={setRoutePhotoUrlInput}
                 />
 
                 <TouchableOpacity style={styles.launchButton} onPress={saveCurrentRoute}>
-                    <Text style={styles.launchButtonText}>Сохранить маршрут</Text>
+                    <Text style={styles.launchButtonText}>Save Route</Text>
                 </TouchableOpacity>
 
                 {savedRoutes.length > 0 && (
                     <View style={styles.savedRoutesContainer}>
-                        <Text style={styles.savedRoutesTitle}>Сохраненные маршруты:</Text>
+                        <Text style={styles.savedRoutesTitle}>Saved Routes:</Text>
                         {savedRoutes.map((routeItem) => (
                             <View key={routeItem.id} style={styles.savedRouteItem}>
                                 <TouchableOpacity
@@ -291,8 +286,8 @@ const MapWithPlaceScreen = ({ route }) => {
                                     <View>
                                         <Text style={styles.savedRouteButtonText}>{routeItem.name}</Text>
                                         <Text style={styles.savedRouteDetails}>
-                                            {routeItem.distance ? `${routeItem.distance.toFixed(1)} км, ` : ''}
-                                            {routeItem.duration ? `${Math.round(routeItem.duration)} мин` : ''}
+                                            {routeItem.distance ? `${routeItem.distance.toFixed(1)} km, ` : ''}
+                                            {routeItem.duration ? `${Math.round(routeItem.duration)} min` : ''}
                                         </Text>
                                         {routeItem.photoUrl ? (
                                             <Image source={{ uri: routeItem.photoUrl }} style={styles.savedRouteImage} />

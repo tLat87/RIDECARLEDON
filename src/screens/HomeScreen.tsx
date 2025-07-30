@@ -62,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <Text style={styles.sectionTitle}>Map</Text>
+            <Text style={styles.sectionTitle}>Create Your Trip</Text>
 
             {/* Секция карты теперь кликабельна */}
             <TouchableOpacity onPress={() => navigation.navigate('MapWithPlaceScreen', {
