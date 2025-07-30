@@ -304,6 +304,7 @@ const MapWithPlaceScreen = ({ route }) => {
                         ))}
                     </View>
                 )}
+                <View style={{marginBottom: 100}}/>
             </ScrollView>
         </View>
     );
