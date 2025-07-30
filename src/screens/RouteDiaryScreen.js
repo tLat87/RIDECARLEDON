@@ -959,7 +959,6 @@ const RoutePlannerScreen = ({ navigation }) => {
                 style={[styles.featuredRouteCard, isSelected && styles.selectedFeaturedRouteCard]}
                 onPress={() => handleSelectFeaturedRoute(route)}
             >
-                <Image source={route.image} style={styles.featuredRouteImage} />
                 <View style={styles.featuredRouteTextContent}>
                     <Text style={styles.featuredRouteName}>{route.name}</Text>
                     <Text style={styles.featuredRouteDescription} numberOfLines={2}>{route.description}</Text>
