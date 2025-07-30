@@ -1,29 +1,25 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
+// import React, { useState } from 'react';
+// import {
+//     View,
+//     Text,
+//     StyleSheet,
+//     Image,
+//     ScrollView,
+//     TouchableOpacity,
+//     FlatList,
+//     Alert
+// } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useSelector } from 'react-redux';
-// import MapView, { Marker, Polyline } from 'react-native-maps'; // Import MapView and related components
+// import MapView, { Marker, Polyline } from 'react-native-maps';
 //
 // const RoutePlannerScreen = ({ navigation }) => {
-//     // **IMPORTANT**: You need to ensure your Redux 'cards' slice `savedPlaces`
-//     // includes 'coordinates' (latitude, longitude) for each place for the map to work.
-//     // Example updated savedPlaces structure:
-//     // {
-//     //   id: 'place1',
-//     //   name: 'Banff National Park',
-//     //   description: 'Stunning mountain scenery...',
-//     //   image: require('../assets/images/place1.png'),
-//     //   coordinates: { latitude: 51.15, longitude: -115.58 },
-//     // },
-//     // For this example, I'm assuming your Redux store already has or will have this structure.
 //     const savedPlaces = useSelector(state => state.cards.cards);
 //
 //     const [selectedPlaces, setSelectedPlaces] = useState([]);
 //     const [optimizedRouteInfo, setOptimizedRouteInfo] = useState(null);
 //     const [selectedFeaturedRoute, setSelectedFeaturedRoute] = useState(null);
 //
-//     // --- Sample Predefined Featured Routes ---
-//     // Updated to use more diverse place IDs, assuming your Redux store has them.
 //     const featuredRoutes = [
 //         {
 //             id: 'fr1',
@@ -161,15 +157,14 @@
 //             distance: '180',
 //             duration: '3.0',
 //             polyline: [
-//                 { latitude: 50.11, longitude: -122.95 }, // Whistler
+//                 { latitude: 50.11, longitude: -122.95 },
 //                 { latitude: 51.42, longitude: -116.18 }, // Lake Louise (from Rockies)
 //                 { latitude: 47.19, longitude: -71.18 }, // Mont Sainte-Anne (simulated path)
 //             ]
 //         },
 //     ];
-//
 //     const togglePlaceSelection = (place) => {
-//         setSelectedFeaturedRoute(null); // Clear featured route selection
+//         setSelectedFeaturedRoute(null);
 //         setSelectedPlaces(prevSelected =>
 //             prevSelected.some(p => p.id === place.id)
 //                 ? prevSelected.filter(p => p.id !== place.id)
@@ -185,28 +180,25 @@
 //
 //         let routePlaces = [];
 //         let totalDistanceKm, totalDurationHours;
-//         let routePolyline = []; // To store polyline coordinates for the map
+//         let routePolyline = [];
 //
 //         if (selectedFeaturedRoute) {
 //             routePlaces = savedPlaces.filter(place => selectedFeaturedRoute.placeIds.includes(place.id));
-//             routePlaces.sort((a, b) => { // Maintain order as defined in featured route
+//             routePlaces.sort((a, b) => {
 //                 const indexA = selectedFeaturedRoute.placeIds.indexOf(a.id);
 //                 const indexB = selectedFeaturedRoute.placeIds.indexOf(b.id);
 //                 return indexA - indexB;
 //             });
 //             totalDistanceKm = selectedFeaturedRoute.distance;
 //             totalDurationHours = selectedFeaturedRoute.duration;
-//             routePolyline = selectedFeaturedRoute.polyline; // Use predefined polyline
+//             routePolyline = selectedFeaturedRoute.polyline;
 //         } else {
-//             // For custom routes, you'd calculate actual polyline via an API
 //             const simulatedOptimizedPlaces = [...selectedPlaces].sort((a, b) => a.name.localeCompare(b.name));
 //             routePlaces = simulatedOptimizedPlaces;
 //             totalDistanceKm = (Math.random() * 100 + 50).toFixed(1);
 //             totalDurationHours = (Math.random() * 5 + 1).toFixed(1);
-//
-//             // Simulate polyline for custom routes based on selected place coordinates
-//             routePolyline = routePlaces.map(place => place.coordinates).filter(Boolean); // Filter out places without coordinates
-//             if (routePolyline.length < 2) routePolyline = []; // Need at least two points for a line
+//             routePolyline = routePlaces.map(place => place.coordinates).filter(Boolean);
+//             if (routePolyline.length < 2) routePolyline = [];
 //         }
 //
 //         setOptimizedRouteInfo({
@@ -221,11 +213,10 @@
 //
 //     const handleSelectFeaturedRoute = (route) => {
 //         setSelectedFeaturedRoute(route);
-//         setSelectedPlaces([]); // Clear manual selections
-//         setOptimizedRouteInfo(null); // Clear previous route info
+//         setSelectedPlaces([]);
+//         setOptimizedRouteInfo(null);
 //     };
 //
-//     // Determine the initial region for the MapView
 //     const getMapInitialRegion = () => {
 //         let coordsToFit = [];
 //         if (optimizedRouteInfo && optimizedRouteInfo.places.length > 0) {
@@ -233,15 +224,13 @@
 //         } else if (selectedPlaces.length > 0) {
 //             coordsToFit = selectedPlaces.map(p => p.coordinates).filter(Boolean);
 //         } else if (savedPlaces.length > 0) {
-//             // Default to first saved place or a general Canada view if nothing else selected
 //             return {
-//                 latitude: savedPlaces[0]?.coordinates?.latitude || 56.1304, // Default to Canada center
+//                 latitude: savedPlaces[0]?.coordinates?.latitude || 56.1304,
 //                 longitude: savedPlaces[0]?.coordinates?.longitude || -106.3468,
-//                 latitudeDelta: 30, // Zoom out for Canada
+//                 latitudeDelta: 30,
 //                 longitudeDelta: 30,
 //             };
 //         } else {
-//             // Default to a general Canada view
 //             return {
 //                 latitude: 56.1304,
 //                 longitude: -106.3468,
@@ -254,7 +243,6 @@
 //             return { latitude: 56.1304, longitude: -106.3468, latitudeDelta: 30, longitudeDelta: 30 };
 //         }
 //
-//         // Calculate a bounding box for the selected coordinates
 //         const minLat = Math.min(...coordsToFit.map(c => c.latitude));
 //         const maxLat = Math.max(...coordsToFit.map(c => c.latitude));
 //         const minLon = Math.min(...coordsToFit.map(c => c.longitude));
@@ -263,17 +251,16 @@
 //         const centerLat = (minLat + maxLat) / 2;
 //         const centerLon = (minLon + maxLon) / 2;
 //
-//         const latDelta = (maxLat - minLat) * 1.5; // Add some padding
+//         const latDelta = (maxLat - minLat) * 1.5;
 //         const lonDelta = (maxLon - minLon) * 1.5;
 //
 //         return {
 //             latitude: centerLat,
 //             longitude: centerLon,
-//             latitudeDelta: latDelta > 0 ? latDelta : 0.5, // Ensure positive delta
+//             latitudeDelta: latDelta > 0 ? latDelta : 0.5,
 //             longitudeDelta: lonDelta > 0 ? lonDelta : 0.5,
 //         };
 //     };
-//
 //
 //     const renderPlaceItem = ({ item: place }) => {
 //         const isSelected = selectedPlaces.some(p => p.id === place.id);
@@ -290,7 +277,7 @@
 //                 {isSelected && (
 //                     <View style={styles.checkIconContainer}>
 //                         <Image
-//                             source={require('../assets/images/4fe12aeb2b6b2f9afb1e0ee49ec743042849f816.png')} // Your checkmark icon
+//                             source={require('../assets/images/4fe12aeb2b6b2f9afb1e0ee49ec743042849f816.png')}
 //                             style={styles.checkIcon}
 //                         />
 //                     </View>
@@ -317,7 +304,7 @@
 //                 {isSelected && (
 //                     <View style={styles.checkIconContainer}>
 //                         <Image
-//                             source={require('../assets/images/4fe12aeb2b6b2f9afb1e0ee49ec743042849f816.png')} // Your checkmark icon
+//                             source={require('../assets/images/4fe12aeb2b6b2f9afb1e0ee49ec743042849f816.png')}
 //                             style={styles.checkIcon}
 //                         />
 //                     </View>
@@ -328,8 +315,7 @@
 //
 //     return (
 //         <SafeAreaView style={styles.safeArea}>
-//             <View style={styles.container}>
-//                 {/* Header */}
+//             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 //                 <View style={styles.header}>
 //                     <TouchableOpacity onPress={() => navigation.goBack()}>
 //                         <Image
@@ -345,7 +331,7 @@
 //                     data={featuredRoutes}
 //                     renderItem={renderFeaturedRouteItem}
 //                     keyExtractor={item => item.id}
-//                     horizontal={true}
+//                     horizontal
 //                     showsHorizontalScrollIndicator={false}
 //                     contentContainerStyle={styles.featuredRoutesList}
 //                 />
@@ -355,8 +341,7 @@
 //                     data={savedPlaces}
 //                     renderItem={renderPlaceItem}
 //                     keyExtractor={item => item.id}
-//                     horizontal={false}
-//                     showsVerticalScrollIndicator={true}
+//                     scrollEnabled={false}
 //                     contentContainerStyle={styles.placeSelectFlatList}
 //                 />
 //
@@ -371,25 +356,23 @@
 //                 </TouchableOpacity>
 //
 //                 {optimizedRouteInfo && (
-//                     <ScrollView style={styles.routeInfoContainer}>
+//                     <View style={styles.routeInfoContainer}>
 //                         <Text style={styles.routeInfoTitle}>{optimizedRouteInfo.name}</Text>
 //                         <Text style={styles.routeDescriptionText}>{optimizedRouteInfo.description}</Text>
 //
-//                         {/* --- ACTUAL MapView Integration --- */}
 //                         <View style={styles.mapContainer}>
 //                             <MapView
 //                                 style={styles.map}
-//                                 initialRegion={getMapInitialRegion()} // Set initial region dynamically
-//                                 // You might want to use onRegionChangeComplete for more advanced map interactions
+//                                 initialRegion={getMapInitialRegion()}
 //                             >
 //                                 {optimizedRouteInfo.places.map((place, index) => (
-//                                     place.coordinates && ( // Only render marker if coordinates exist
+//                                     place.coordinates && (
 //                                         <Marker
 //                                             key={place.id}
 //                                             coordinate={place.coordinates}
 //                                             title={`${index + 1}. ${place.name}`}
 //                                             description={place.description.split(',')[0].trim()}
-//                                             pinColor="#D9B43B" // Custom pin color
+//                                             pinColor="#D9B43B"
 //                                         />
 //                                     )
 //                                 ))}
@@ -404,7 +387,6 @@
 //                                 )}
 //                             </MapView>
 //                         </View>
-//                         {/* --- END MapView Integration --- */}
 //
 //                         <View style={styles.routeSummary}>
 //                             <View style={styles.summaryItem}>
@@ -428,9 +410,9 @@
 //                         ) : (
 //                             <Text style={styles.noPlacesInRoute}>No places found for this route. Ensure place IDs and coordinates are correct.</Text>
 //                         )}
-//                     </ScrollView>
+//                     </View>
 //                 )}
-//             </View>
+//             </ScrollView>
 //         </SafeAreaView>
 //     );
 // };
@@ -656,10 +638,11 @@
 //         fontWeight: 'bold',
 //     },
 // });
-//
+
 // export default RoutePlannerScreen;
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -824,13 +807,41 @@ const RoutePlannerScreen = ({ navigation }) => {
             ]
         },
     ];
+
+    useEffect(() => {
+        if (featuredRoutes.length > 0 && !selectedFeaturedRoute) {
+            const defaultRoute = featuredRoutes[0];
+            setSelectedFeaturedRoute(defaultRoute);
+            generateRouteFromFeatured(defaultRoute);
+        }
+    }, []);
+
     const togglePlaceSelection = (place) => {
         setSelectedFeaturedRoute(null);
+        setOptimizedRouteInfo(null);
         setSelectedPlaces(prevSelected =>
             prevSelected.some(p => p.id === place.id)
                 ? prevSelected.filter(p => p.id !== place.id)
                 : [...prevSelected, place]
         );
+    };
+
+    const generateRouteFromFeatured = (route) => {
+        const routePlaces = savedPlaces.filter(place => route.placeIds.includes(place.id));
+        routePlaces.sort((a, b) => {
+            const indexA = route.placeIds.indexOf(a.id);
+            const indexB = route.placeIds.indexOf(b.id);
+            return indexA - indexB;
+        });
+
+        setOptimizedRouteInfo({
+            name: route.name,
+            description: route.description,
+            places: routePlaces,
+            distance: route.distance,
+            duration: route.duration,
+            polylineCoordinates: route.polyline,
+        });
     };
 
     const handleGenerateRoute = () => {
@@ -844,15 +855,8 @@ const RoutePlannerScreen = ({ navigation }) => {
         let routePolyline = [];
 
         if (selectedFeaturedRoute) {
-            routePlaces = savedPlaces.filter(place => selectedFeaturedRoute.placeIds.includes(place.id));
-            routePlaces.sort((a, b) => {
-                const indexA = selectedFeaturedRoute.placeIds.indexOf(a.id);
-                const indexB = selectedFeaturedRoute.placeIds.indexOf(b.id);
-                return indexA - indexB;
-            });
-            totalDistanceKm = selectedFeaturedRoute.distance;
-            totalDurationHours = selectedFeaturedRoute.duration;
-            routePolyline = selectedFeaturedRoute.polyline;
+            generateRouteFromFeatured(selectedFeaturedRoute);
+            return;
         } else {
             const simulatedOptimizedPlaces = [...selectedPlaces].sort((a, b) => a.name.localeCompare(b.name));
             routePlaces = simulatedOptimizedPlaces;
@@ -863,8 +867,8 @@ const RoutePlannerScreen = ({ navigation }) => {
         }
 
         setOptimizedRouteInfo({
-            name: selectedFeaturedRoute ? selectedFeaturedRoute.name : 'Custom Route',
-            description: selectedFeaturedRoute ? selectedFeaturedRoute.description : 'A route based on your selected places.',
+            name: 'Custom Route',
+            description: 'A route based on your selected places.',
             places: routePlaces,
             distance: totalDistanceKm,
             duration: totalDurationHours,
@@ -875,11 +879,12 @@ const RoutePlannerScreen = ({ navigation }) => {
     const handleSelectFeaturedRoute = (route) => {
         setSelectedFeaturedRoute(route);
         setSelectedPlaces([]);
-        setOptimizedRouteInfo(null);
+        generateRouteFromFeatured(route);
     };
 
     const getMapInitialRegion = () => {
         let coordsToFit = [];
+
         if (optimizedRouteInfo && optimizedRouteInfo.places.length > 0) {
             coordsToFit = optimizedRouteInfo.places.map(p => p.coordinates).filter(Boolean);
         } else if (selectedPlaces.length > 0) {
@@ -1006,15 +1011,15 @@ const RoutePlannerScreen = ({ navigation }) => {
                     contentContainerStyle={styles.placeSelectFlatList}
                 />
 
-                <TouchableOpacity
-                    style={styles.generateRouteButton}
-                    onPress={handleGenerateRoute}
-                    disabled={selectedPlaces.length < 2 && !selectedFeaturedRoute}
-                >
-                    <Text style={styles.generateRouteButtonText}>
-                        {selectedFeaturedRoute ? `Explore "${selectedFeaturedRoute.name}"` : 'Generate Custom Route'}
-                    </Text>
-                </TouchableOpacity>
+                {!selectedFeaturedRoute && (
+                    <TouchableOpacity
+                        style={styles.generateRouteButton}
+                        onPress={handleGenerateRoute}
+                        disabled={selectedPlaces.length < 2}
+                    >
+                        <Text style={styles.generateRouteButtonText}>Generate Custom Route</Text>
+                    </TouchableOpacity>
+                )}
 
                 {optimizedRouteInfo && (
                     <View style={styles.routeInfoContainer}>
@@ -1299,5 +1304,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
 
 export default RoutePlannerScreen;
